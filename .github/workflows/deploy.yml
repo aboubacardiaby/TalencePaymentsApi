@@ -27,6 +27,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Validate required variables
+        run: |
+          if [ -z "${{ vars.GCP_REGION }}" ]; then
+            echo "::error::GCP_REGION variable is not set. Go to Settings > Secrets and variables > Actions > Variables"
+            exit 1
+          fi
+          if [ -z "${{ vars.GCP_PROJECT_ID }}" ]; then
+            echo "::error::GCP_PROJECT_ID variable is not set. Go to Settings > Secrets and variables > Actions > Variables"
+            exit 1
+          fi
+
       - name: Build image
         run: docker build -t talence-payments-api:${{ github.sha }} .
 
