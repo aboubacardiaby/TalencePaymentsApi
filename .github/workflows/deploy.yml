@@ -16,8 +16,6 @@ on:
 
 env:
   SERVICE_NAME: talence-payments-api
-  REGION: ${{ vars.GCP_REGION }}
-  PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
 
 jobs:
   build:
@@ -26,17 +24,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Validate required variables
-        run: |
-          if [ -z "${{ vars.GCP_REGION }}" ]; then
-            echo "::error::GCP_REGION variable is not set. Go to Settings > Secrets and variables > Actions > Variables"
-            exit 1
-          fi
-          if [ -z "${{ vars.GCP_PROJECT_ID }}" ]; then
-            echo "::error::GCP_PROJECT_ID variable is not set. Go to Settings > Secrets and variables > Actions > Variables"
-            exit 1
-          fi
 
       - name: Build image
         run: docker build -t talence-payments-api:${{ github.sha }} .
@@ -47,13 +34,35 @@ jobs:
     needs: build
     if: (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')) || github.event_name == 'workflow_dispatch'
 
+    env:
+      REGION: ${{ vars.GCP_REGION }}
+      PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+
     permissions:
       contents: read
-      id-token: write  # required for Workload Identity Federation
+      id-token: write
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Debug variables
+        run: |
+          echo "GCP_REGION from vars: '${{ vars.GCP_REGION }}'"
+          echo "GCP_PROJECT_ID from vars: '${{ vars.GCP_PROJECT_ID }}'"
+          echo "REGION from env: '${{ env.REGION }}'"
+          echo "PROJECT_ID from env: '${{ env.PROJECT_ID }}'"
+
+      - name: Validate required variables
+        run: |
+          if [ -z "${{ vars.GCP_REGION }}" ]; then
+            echo "::error::GCP_REGION variable is not set"
+            exit 1
+          fi
+          if [ -z "${{ vars.GCP_PROJECT_ID }}" ]; then
+            echo "::error::GCP_PROJECT_ID variable is not set"
+            exit 1
+          fi
 
       - name: Authenticate to GCP via Workload Identity
         uses: google-github-actions/auth@v2
@@ -65,12 +74,11 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2
 
       - name: Configure Docker for Artifact Registry
-        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+        run: gcloud auth configure-docker ${{ vars.GCP_REGION }}-docker.pkg.dev --quiet
 
       - name: Build and push image
-        env:
-          IMAGE: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/talence-payments-api/talence-payments-api
         run: |
+          IMAGE="${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/talence-payments-api/talence-payments-api"
           docker build \
             -t $IMAGE:${{ github.sha }} \
             -t $IMAGE:latest \
@@ -82,8 +90,8 @@ jobs:
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: ${{ env.SERVICE_NAME }}
-          region: ${{ env.REGION }}
-          image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/talence-payments-api/talence-payments-api:${{ github.sha }}
+          region: ${{ vars.GCP_REGION }}
+          image: ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/talence-payments-api/talence-payments-api:${{ github.sha }}
           flags: >-
             --allow-unauthenticated
             --min-instances=0
