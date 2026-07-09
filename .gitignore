@@ -1,0 +1,66 @@
+# Build results
+bin/
+obj/
+out/
+
+# .NET
+*.user
+*.userosscache
+*.suo
+*.cache
+*.dll
+*.pdb
+*.exe
+!*.dll.config
+
+# NuGet
+*.nupkg
+*.snupkg
+**/packages/*
+!**/packages/build/
+
+# Visual Studio
+.vs/
+*.sln.docstates
+*.rsuser
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# VS Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# User-specific files
+*.suo
+*.user
+*.sln.docstates
+
+# Publish output
+publish/
+
+# Logs
+logs/
+*.log
+Logs/
+
+# Environment files
+.env
+.env.*
+!.env.example
+appsettings.*.local.json
+secrets.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test results
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
