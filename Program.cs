@@ -73,8 +73,8 @@ try
 
     app.UseSerilogRequestLogging();
 
-    if (app.Environment.IsDevelopment())
-    {
+    //if (app.Environment.IsDevelopment()|| app.Environment.IsProduction == true)
+    //{
         app.UseSwagger();
         app.UseSwaggerUI(c =>
         {
@@ -83,7 +83,7 @@ try
             c.RoutePrefix = string.Empty;   // Swagger at root "/"
             c.DocumentTitle = "Talence Payments API";
         });
-    }
+  //  }
 
     app.UseMiddleware<GlobalExceptionMiddleware>();
     app.UseCors("AllowAll");
