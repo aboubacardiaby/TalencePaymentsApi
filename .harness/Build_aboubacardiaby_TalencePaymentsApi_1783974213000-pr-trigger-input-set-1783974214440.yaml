@@ -1,0 +1,14 @@
+inputSet:
+  name: Build_aboubacardiaby_TalencePaymentsApi_1783974213000-pr-trigger-input-set
+  identifier: Build_aboubacardiaby_TalencePaymentsApi_1783974213000prtriggerinputset
+  orgIdentifier: default
+  projectIdentifier: dataservice
+  pipeline:
+    identifier: Build_aboubacardiaby_TalencePaymentsApi_1783974213000
+    properties:
+      ci:
+        codebase:
+          build:
+            type: PR
+            spec:
+              number: <+trigger.prNumber>
