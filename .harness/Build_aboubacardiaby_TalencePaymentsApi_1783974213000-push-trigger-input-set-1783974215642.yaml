@@ -1,0 +1,14 @@
+inputSet:
+  name: Build_aboubacardiaby_TalencePaymentsApi_1783974213000-push-trigger-input-set
+  identifier: Build_aboubacardiaby_TalencePaymentsApi_1783974213000pushtriggerinputset
+  orgIdentifier: default
+  projectIdentifier: dataservice
+  pipeline:
+    identifier: Build_aboubacardiaby_TalencePaymentsApi_1783974213000
+    properties:
+      ci:
+        codebase:
+          build:
+            type: branch
+            spec:
+              branch: <+trigger.branch>
